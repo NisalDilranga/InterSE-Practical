@@ -1,13 +1,9 @@
-export interface user {
-  id: string;
+// Explicitly define the Ingredient interface
+export interface Ingredient {
   name: string;
-  email: string;
-  phone: string;
-  password: string;
-  role: string;
-  createdAt: Date;
-  updatedAt: Date;
+  quantity: string;
 }
+
 export interface itemType {
   id: string;
   name: string;
@@ -16,22 +12,22 @@ export interface itemType {
 }
 export interface item {
   id: string;
+  name: string;
   type: string;
   price: number;
   imgUrl: string;
   quantity: number;
   createdAt: Date;
   updatedAt: Date;
-  ingredients: string[];
+  ingredients: Ingredient[];
   description: string;
 }
 export interface orderItem {
-
   id: string;
   userId: string;
   itemId: string;
   quantity: number;
-  ingredients: string[];
+  ingredients: Ingredient[];
   price: number;
   totalPrice: number;
   status: string;

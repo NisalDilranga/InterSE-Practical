@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import type { LoginFormData } from './config';
 
-
+interface LoginFormData {
+  email: string;
+  password: string;
+}
 
 const LoginForm = () => {
   const [formData, setFormData] = useState<LoginFormData>({
@@ -18,14 +20,39 @@ const LoginForm = () => {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const authenticateUser = (email: string, password: string) => {
+    if (password === "12345678") {
+      if (email === "some@gmail.com") {
+        return "customer";
+      } else if (email === "admin@gmail.com") {
+        return "shopOwner";
+      }
+    }
+    return null; 
+  };
+
+  const handleSubmit = async () => {
     setIsLoading(true);
     
-    // Simulate API call
     setTimeout(() => {
-      console.log('Login attempt:', formData);
-      alert(`Login attempt with email: ${formData.email}`);
+      const role = authenticateUser(formData.email, formData.password);
+      
+      if (role) {
+        console.log('Login successful:', { email: formData.email, role });
+        
+        if (role === "shopOwner") {
+          alert(`Login successful! Redirecting to shop owner dashboard (/)...`);
+       
+          window.location.href = '/';
+        } else if (role === "customer") {
+          alert(`Login successful! Redirecting to customer home (/home)...`);
+    
+          window.location.href = '/home';
+        }
+      } else {
+        alert('Invalid email or password. Please try again.');
+      }
+      
       setIsLoading(false);
     }, 1000);
   };
@@ -102,7 +129,7 @@ const LoginForm = () => {
           <div>
             <button
               type="button"
-              onClick={() => handleSubmit({ preventDefault: () => {} } as React.FormEvent<HTMLFormElement>)}
+              onClick={handleSubmit}
               disabled={isLoading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out"
             >
@@ -123,6 +150,15 @@ const LoginForm = () => {
                 Sign up here
               </a>
             </p>
+          </div>
+        </div>
+
+     
+        <div className="mt-6 p-4 bg-gray-50 rounded-md">
+          <h3 className="text-sm font-medium text-gray-700 mb-2">Demo </h3>
+          <div className="text-xs text-gray-600 space-y-1">
+            <p><strong>Shop Owner:</strong> admin@gmail.com / 12345678</p>
+            <p><strong>Customer:</strong> some@gmail.com / 12345678</p>
           </div>
         </div>
       </div>

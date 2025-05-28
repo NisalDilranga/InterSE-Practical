@@ -11,16 +11,18 @@ import {
 import { getAllTypes } from "../../../services/itemTypeServices";
 import type { item, itemType } from "../../../types/types";
 
+
+
 const ItemManage = () => {
   const [items, setItems] = useState<item[]>([]);
   const [itemTypes, setItemTypes] = useState<itemType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Form state
   const [isEditing, setIsEditing] = useState(false);
   const [currentItemId, setCurrentItemId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Omit<item, "id">>({
+    name: "",
     type: "",
     price: 0,
     imgUrl: "",
@@ -59,7 +61,6 @@ const ItemManage = () => {
       toast.error("Failed to load item types");
     }
   };
-
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -72,11 +73,6 @@ const ItemManage = () => {
         ...formData,
         [name]: Number(value),
       });
-    } else if (name === "ingredients") {
-      setFormData({
-        ...formData,
-        ingredients: value.split(",").map((item) => item.trim()),
-      });
     } else {
       setFormData({
         ...formData,
@@ -84,8 +80,44 @@ const ItemManage = () => {
       });
     }
   };
+
+  const [newIngredient, setNewIngredient] = useState({
+    name: "",
+    quantity: "",
+  });
+
+  const handleIngredientChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewIngredient({
+      ...newIngredient,
+      [name]: value,
+    });
+  };
+
+  const addIngredient = () => {
+    if (newIngredient.name.trim() === "") return;
+
+    setFormData({
+      ...formData,
+      ingredients: [...formData.ingredients, { ...newIngredient }],
+    });
+
+    // Reset the ingredient inputs
+    setNewIngredient({ name: "", quantity: "" });
+  };
+
+  const removeIngredient = (index: number) => {
+    const updatedIngredients = [...formData.ingredients];
+    updatedIngredients.splice(index, 1);
+
+    setFormData({
+      ...formData,
+      ingredients: updatedIngredients,
+    });
+  };
   const resetForm = () => {
     setFormData({
+      name: "",
       type: "",
       price: 0,
       imgUrl: "",
@@ -126,6 +158,7 @@ const ItemManage = () => {
     setIsEditing(true);
     setCurrentItemId(item.id);
     setFormData({
+      name: item.name,
       type: item.type,
       price: item.price,
       imgUrl: item.imgUrl,
@@ -167,6 +200,18 @@ const ItemManage = () => {
           {" "}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
+              <label className="block mb-1 font-medium">Item Name</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded p-2"
+                required
+                placeholder="Enter item name"
+              />
+            </div>
+            <div>
               <label className="block mb-1 font-medium">Item Type</label>
               <select
                 name="type"
@@ -183,7 +228,6 @@ const ItemManage = () => {
                 ))}
               </select>
             </div>
-
             <div>
               <label className="block mb-1 font-medium">Price</label>
               <input
@@ -197,7 +241,6 @@ const ItemManage = () => {
                 step="0.01"
               />
             </div>
-
             <div>
               <label className="block mb-1 font-medium">Image URL</label>
               <input
@@ -209,7 +252,6 @@ const ItemManage = () => {
                 required
               />
             </div>
-
             <div>
               <label className="block mb-1 font-medium">Quantity</label>
               <input
@@ -221,19 +263,59 @@ const ItemManage = () => {
                 required
                 min="0"
               />
-            </div>
+            </div>{" "}
+            <div className="col-span-1 md:col-span-2">
+              <label className="block mb-1 font-medium">Ingredients</label>
+              <div className="mb-2 flex gap-2">
+                <input
+                  type="text"
+                  name="name"
+                  value={newIngredient.name}
+                  onChange={handleIngredientChange}
+                  placeholder="Ingredient name"
+                  className="flex-1 border border-gray-300 rounded p-2"
+                />
+                <input
+                  type="text"
+                  name="quantity"
+                  value={newIngredient.quantity}
+                  onChange={handleIngredientChange}
+                  placeholder="Quantity (e.g., 100g, 2 tbsp)"
+                  className="flex-1 border border-gray-300 rounded p-2"
+                />
+                <button
+                  type="button"
+                  onClick={addIngredient}
+                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+                >
+                  Add
+                </button>
+              </div>
 
-            <div>
-              <label className="block mb-1 font-medium">
-                Ingredients (comma-separated)
-              </label>
-              <input
-                type="text"
-                name="ingredients"
-                value={formData.ingredients.join(", ")}
-                onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded p-2"
-              />
+              {formData.ingredients.length > 0 && (
+                <div className="mt-2 border rounded-md p-2 bg-gray-50">
+                  <p className="font-medium mb-1">Added Ingredients:</p>
+                  <ul className="space-y-1">
+                    {formData.ingredients.map((ingredient, index) => (
+                      <li
+                        key={index}
+                        className="flex justify-between items-center"
+                      >
+                        <span>
+                          {ingredient.name}: {ingredient.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeIngredient(index)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          ✕
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
           <div className="mb-4">
@@ -272,7 +354,6 @@ const ItemManage = () => {
         </form>
       </div>
 
-      {/* Items Table */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <h2 className="text-xl font-semibold p-6 border-b">Items List</h2>
 

@@ -1,9 +1,10 @@
-import HomeNav from "../component/home/HomeNav"
+import Home from "../component/home/Home"
+
 
 
 const HomePage = () => {
   return (
-    <div><HomeNav/></div>
+    <div><Home/></div>
   )
 }
 
