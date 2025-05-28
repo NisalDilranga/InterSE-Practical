@@ -1,6 +1,7 @@
 import { FaCartPlus } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
+import LogoutButton from "../common/LogoutButton";
 
 const HomeNav = () => {
   const { getTotalItems } = useCart();
@@ -33,6 +34,7 @@ const HomeNav = () => {
                 </span>
               )}
             </Link>
+            <LogoutButton className="hover:text-blue-200 cursor-pointer transition-colors" />
           </div>
         </div>
       </div>

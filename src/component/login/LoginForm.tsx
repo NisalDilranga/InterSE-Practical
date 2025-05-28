@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { setAuthData } from "../../utils/auth";
+import { toast } from "react-toastify";
 
 interface LoginFormData {
   email: string;
@@ -7,16 +10,17 @@ interface LoginFormData {
 
 const LoginForm = () => {
   const [formData, setFormData] = useState<LoginFormData>({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -28,31 +32,33 @@ const LoginForm = () => {
         return "shopOwner";
       }
     }
-    return null; 
+    return null;
   };
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    
+
     setTimeout(() => {
       const role = authenticateUser(formData.email, formData.password);
-      
+
       if (role) {
-        console.log('Login successful:', { email: formData.email, role });
-        
+        console.log("Login successful:", { email: formData.email, role });
+
+        const mockToken = btoa(`${formData.email}:${role}:${Date.now()}`);
+
+        setAuthData(mockToken, role);
+
         if (role === "shopOwner") {
-          alert(`Login successful! Redirecting to shop owner dashboard (/)...`);
-       
-          window.location.href = '/';
+          toast.success(`Login successful! `);
+          navigate("/");
         } else if (role === "customer") {
-          alert(`Login successful! Redirecting to customer home (/home)...`);
-    
-          window.location.href = '/home';
+          toast.success(`Login successful! `);
+          navigate("/home");
         }
       } else {
-        alert('Invalid email or password. Please try again.');
+        toast.warn("Invalid email or password. Please try again.");
       }
-      
+
       setIsLoading(false);
     }, 1000);
   };
@@ -68,11 +74,14 @@ const LoginForm = () => {
             Welcome back! Please enter your details.
           </p>
         </div>
-        
+
         <div className="mt-8 space-y-6">
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email address
               </label>
               <input
@@ -87,9 +96,12 @@ const LoginForm = () => {
                 placeholder="Enter your email"
               />
             </div>
-            
+
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <input
@@ -114,13 +126,19 @@ const LoginForm = () => {
                 type="checkbox"
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+              <label
+                htmlFor="remember-me"
+                className="ml-2 block text-sm text-gray-900"
+              >
                 Remember me
               </label>
             </div>
 
             <div className="text-sm">
-              <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+              <a
+                href="#"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
                 Forgot your password?
               </a>
             </div>
@@ -134,31 +152,53 @@ const LoginForm = () => {
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out"
             >
               {isLoading ? (
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
               ) : null}
-              {isLoading ? 'Signing in...' : 'Sign in'}
+              {isLoading ? "Signing in..." : "Sign in"}
             </button>
           </div>
 
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+              Don't have an account?{" "}
+              <a
+                href="#"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
                 Sign up here
               </a>
             </p>
           </div>
         </div>
 
-     
         <div className="mt-6 p-4 bg-gray-50 rounded-md">
           <h3 className="text-sm font-medium text-gray-700 mb-2">Demo </h3>
           <div className="text-xs text-gray-600 space-y-1">
-            <p><strong>Shop Owner:</strong> admin@gmail.com / 12345678</p>
-            <p><strong>Customer:</strong> some@gmail.com / 12345678</p>
+            <p>
+              <strong>Shop Owner:</strong> admin@gmail.com / 12345678
+            </p>
+            <p>
+              <strong>Customer:</strong> some@gmail.com / 12345678
+            </p>
           </div>
         </div>
       </div>
