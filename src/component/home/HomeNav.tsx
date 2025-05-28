@@ -1,6 +1,6 @@
 import { FaCartPlus } from "react-icons/fa6";
 
-const Home = () => {
+const HomeNav = () => {
   return (
     <div className="flex flex-col w-full h-screen">
       <div className="p-6 bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-xl">
@@ -27,4 +27,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default HomeNav

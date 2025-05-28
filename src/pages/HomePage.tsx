@@ -1,8 +1,9 @@
+import HomeNav from "../component/home/HomeNav"
 
 
 const HomePage = () => {
   return (
-    <div><HomePage/></div>
+    <div><HomeNav/></div>
   )
 }
 
